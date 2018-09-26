@@ -7,7 +7,7 @@
     <authors>$author$</authors>
     <owners>$author$</owners>
     <licenseUrl>https://opensource.org/licenses/MIT</licenseUrl>
-    <projectUrl>https://github.com/asparlose/Asparlose.Wpf</projectUrl>
+    <projectUrl>https://github.com/asparlose/Asparlose.Wpf.Teardrop</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
     <releaseNotes>First release.</releaseNotes>
