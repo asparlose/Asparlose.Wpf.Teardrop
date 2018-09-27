@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Interactivity;
 
 namespace Asparlose.Wpf
@@ -19,6 +20,15 @@ namespace Asparlose.Wpf
 
         public static readonly DependencyProperty FileCollectionProperty
             = DependencyProperty.Register(nameof(FileCollection), typeof(ICollection<string>), typeof(FileDropBehavior));
+
+        public ICommand Command
+        {
+            get => (ICommand)GetValue(CommandProperty);
+            set => SetValue(CommandProperty, value);
+        }
+
+        public static readonly DependencyProperty CommandProperty
+            = DependencyProperty.Register(nameof(Command), typeof(ICommand), typeof(FileDropBehavior));
 
         public FileDropBehavior()
         {
@@ -51,14 +61,40 @@ namespace Asparlose.Wpf
         public event EventHandler<FileDropEventArgs> Drop;
 
         protected virtual void OnDrop(IEnumerable<string> files)
-            => Drop?.Invoke(this, new FileDropEventArgs(files));
+        {
+            if (Command == null)
+            {
+                Drop?.Invoke(this, new FileDropEventArgs(files));
+            }
+            else
+            {
+                if (Command?.CanExecute(files) ?? false)
+                {
+                    Command.Execute(files);
+                    Drop?.Invoke(this, new FileDropEventArgs(files));
+                }
+            }
+        }
 
         private void AssociatedObject_PreviewDragOver(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop, true))
-                e.Effects = DragDropEffects.Copy;
+            {
+                if (Command != null
+                    && e.Data.GetData(DataFormats.FileDrop) is string[] files
+                    && !Command.CanExecute(files))
+                {
+                    e.Effects = DragDropEffects.None;
+                }
+                else
+                {
+                    e.Effects = DragDropEffects.Copy;
+                }
+            }
             else
+            {
                 e.Effects = DragDropEffects.None;
+            }
 
             e.Handled = true;
         }
