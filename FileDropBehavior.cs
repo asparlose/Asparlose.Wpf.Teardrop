@@ -12,12 +12,14 @@ namespace Asparlose.Wpf
 {
     public class FileDropBehavior : Behavior<FrameworkElement>
     {
+        [Obsolete]
         public ICollection<string> FileCollection
         {
             get => (ICollection<string>)(GetValue(FileCollectionProperty));
             set => SetValue(FileCollectionProperty, value);
         }
 
+        [Obsolete]
         public static readonly DependencyProperty FileCollectionProperty
             = DependencyProperty.Register(nameof(FileCollection), typeof(ICollection<string>), typeof(FileDropBehavior));
 
@@ -32,14 +34,18 @@ namespace Asparlose.Wpf
 
         public FileDropBehavior()
         {
+#pragma warning disable 0612
             FileCollection = new List<string>();
+#pragma warning restore 0612
             Drop += FileDropBehavior_Drop;
         }
 
         private void FileDropBehavior_Drop(object sender, FileDropEventArgs e)
         {
             foreach (var i in e.Files)
+#pragma warning disable 0612
                 FileCollection?.Add(i);
+#pragma warning restore 0612
         }
 
         protected override void OnAttached()
